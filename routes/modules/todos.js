@@ -29,4 +29,29 @@ router.get('/:id', (req, res) => {
     .catch(error => console.log(error))
 })
 
+router.get('/:id/edit', (req, res) => {
+  const UserId = req.user.id
+  const id = req.params.id
+  
+  return Todo.findOne({ where: { id, UserId } })
+    .then(todo => res.render('edit', { todo: todo.get() }))
+    .catch(err => console.log(err))
+})
+
+router.put('/:id', (req, res) => {
+  const UserId = req.user.id
+  const id = req.params.id
+  const { name, isDone } = req.body
+  console.log(req.body)
+
+  return Todo.findOne({ where: { id, UserId } })
+    .then(todo => {
+      todo.name = name
+      todo.isDone = isDone === 'on'
+      return todo.save()
+    })
+    .then(() => res.redirect(`/todo/${id}`))
+    .catch(err => console.log(err))
+})
+
 module.exports = router
